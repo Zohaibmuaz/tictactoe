@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="dark-theme">
+    <div class="theme-toggle" id="theme-btn" title="Toggle Theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </div>
+
+    <div id="setup-screen" class="overlay">
+        <div class="glass-card fade-in">
+            <h1 class="gradient-text">ELITE</h1>
+            <p>Enter your name to start the duel</p>
+            <div class="input-group">
+                <input type="text" id="name-input" placeholder="Your Name" maxlength="15">
+                <button id="join-btn" class="primary-btn">Join Match</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <div class="game-header">
+            <div class="player-slots">
+                <div id="player-me" class="slot">
+                    <div class="avatar-container">
+                        <div class="avatar" id="my-avatar">?</div>
+                        <div class="timer-ring" id="my-timer">15</div>
+                    </div>
+                    <span class="name-label" id="my-name">You</span>
+                </div>
+                
+                <div class="vs-divider">
+                    <div class="vs-glow">VS</div>
+                </div>
+
+                <div id="player-opponent" class="slot">
+                    <div class="avatar-container">
+                        <div class="avatar" id="opponent-avatar">?</div>
+                        <div class="timer-ring" id="opponent-timer">15</div>
+                    </div>
+                    <span class="name-label" id="opponent-name">Waiting...</span>
+                </div>
+            </div>
+            
+            <div id="status-badge" class="status-badge">Connecting...</div>
+        </div>
+
+        <main class="board-area">
+            <div id="board" class="rigid-grid">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+        </main>
+
+        <footer class="controls">
+            <button id="reset" class="glass-btn">New Game</button>
+            <button id="download-btn" class="gold-btn hidden">Download Report</button>
+        </footer>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
