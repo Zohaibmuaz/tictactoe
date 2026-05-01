@@ -2,9 +2,29 @@ const socket = io();
 
 // UI Elements
 const setupScreen = document.getElementById('setup-screen');
-const gameContainer = document.getElementById('game-container');
+const nameSection = document.getElementById('name-section');
+const modeSection = document.getElementById('mode-section');
+const friendSection = document.getElementById('friend-section');
+const waitingSection = document.getElementById('waiting-section');
+
 const nameInput = document.getElementById('name-input');
-const joinBtn = document.getElementById('join-btn');
+const nextBtn = document.getElementById('next-btn');
+
+const quickMatchBtn = document.getElementById('quick-match-btn');
+const playFriendBtn = document.getElementById('play-friend-btn');
+const backNameBtn = document.getElementById('back-name-btn');
+
+const createRoomBtn = document.getElementById('create-room-btn');
+const roomCodeInput = document.getElementById('room-code-input');
+const joinRoomBtn = document.getElementById('join-room-btn');
+const backModeBtn = document.getElementById('back-mode-btn');
+
+const waitingMessage = document.getElementById('waiting-message');
+const roomCodeDisplay = document.getElementById('room-code-display');
+const cancelWaitingBtn = document.getElementById('cancel-waiting-btn');
+
+// Game Elements
+const gameContainer = document.getElementById('game-container');
 const themeBtn = document.getElementById('theme-btn');
 const cells = document.querySelectorAll('.cell');
 const statusBadge = document.getElementById('status-badge');
@@ -35,29 +55,92 @@ themeBtn.addEventListener('click', () => {
     document.body.classList.toggle('light-theme');
 });
 
-// Join Game Logic
-joinBtn.addEventListener('click', () => {
+// Navigation Flow
+function hideAllSections() {
+    nameSection.classList.add('hidden');
+    modeSection.classList.add('hidden');
+    friendSection.classList.add('hidden');
+    waitingSection.classList.add('hidden');
+}
+
+nextBtn.addEventListener('click', () => {
     const name = nameInput.value.trim();
     if (name) {
         myInfo.name = name;
         myInfo.char = name.charAt(0).toUpperCase();
         myNameDisplay.textContent = name;
         myAvatar.textContent = myInfo.char;
-        
-        setupScreen.classList.add('hidden');
-        gameContainer.classList.remove('hidden');
-        gameContainer.classList.add('fade-in');
-        
-        socket.emit('joinGame', { name: myInfo.name, char: myInfo.char });
+        hideAllSections();
+        modeSection.classList.remove('hidden');
     }
 });
 
+backNameBtn.addEventListener('click', () => {
+    hideAllSections();
+    nameSection.classList.remove('hidden');
+});
+
+quickMatchBtn.addEventListener('click', () => {
+    hideAllSections();
+    waitingMessage.textContent = 'Searching for a random opponent...';
+    roomCodeDisplay.classList.add('hidden');
+    waitingSection.classList.remove('hidden');
+    socket.emit('joinRandom', { name: myInfo.name, char: myInfo.char });
+});
+
+playFriendBtn.addEventListener('click', () => {
+    hideAllSections();
+    friendSection.classList.remove('hidden');
+});
+
+backModeBtn.addEventListener('click', () => {
+    hideAllSections();
+    modeSection.classList.remove('hidden');
+});
+
+createRoomBtn.addEventListener('click', () => {
+    hideAllSections();
+    waitingMessage.textContent = 'Share this code with your friend:';
+    roomCodeDisplay.textContent = '...';
+    roomCodeDisplay.classList.remove('hidden');
+    waitingSection.classList.remove('hidden');
+    socket.emit('createPrivateRoom', { name: myInfo.name, char: myInfo.char });
+});
+
+joinRoomBtn.addEventListener('click', () => {
+    const code = roomCodeInput.value.trim().toUpperCase();
+    if (code.length === 5) {
+        socket.emit('joinPrivateRoom', { name: myInfo.name, char: myInfo.char, code });
+    } else {
+        alert("Please enter a valid 5-letter code.");
+    }
+});
+
+cancelWaitingBtn.addEventListener('click', () => {
+    socket.emit('cancelWaiting');
+    hideAllSections();
+    modeSection.classList.remove('hidden');
+});
+
 // Socket Event Listeners
+socket.on('errorMsg', (msg) => {
+    alert(msg);
+});
+
+socket.on('roomCreated', ({ code }) => {
+    roomCodeDisplay.textContent = code;
+});
+
 socket.on('waiting', (msg) => {
-    statusBadge.textContent = msg;
+    waitingMessage.textContent = msg;
+    roomCodeDisplay.classList.add('hidden');
 });
 
 socket.on('gameStart', ({ roomId: id, players }) => {
+    setupScreen.classList.add('hidden');
+    gameContainer.classList.remove('hidden');
+    gameContainer.classList.add('fade-in');
+    
     roomId = id;
     gameActive = true;
     boardState.fill(null);
@@ -193,14 +276,12 @@ downloadBtn.addEventListener('click', () => {
             const y = startY + i * (cellSize + padding);
             const index = i * 3 + j;
 
-            // Cell Background
             ctx.fillStyle = '#161a1d';
             ctx.beginPath();
             ctx.roundRect(x, y, cellSize, cellSize, 15);
             ctx.fill();
             ctx.stroke();
 
-            // Symbols
             const symbol = boardState[index];
             if (symbol) {
                 const isMe = (symbol === myInfo.symbol);
@@ -211,12 +292,10 @@ downloadBtn.addEventListener('click', () => {
         }
     }
 
-    // Footer
     ctx.fillStyle = '#495057';
     ctx.font = 'italic 16px Outfit, sans-serif';
     ctx.fillText('Generated by Elite Tic Tac Toe', 300, 660);
 
-    // Download the Image
     const link = document.createElement('a');
     link.download = `EliteMatch_${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');

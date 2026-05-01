@@ -15,12 +15,46 @@
     </div>
 
     <div id="setup-screen" class="overlay">
-        <div class="glass-card fade-in">
+        <!-- Setup Screen: Name -->
+        <div class="glass-card fade-in" id="name-section">
             <h1 class="gradient-text">ELITE</h1>
             <p>Enter your name to start the duel</p>
             <div class="input-group">
                 <input type="text" id="name-input" placeholder="Your Name" maxlength="15">
-                <button id="join-btn" class="primary-btn">Join Match</button>
+                <button id="next-btn" class="primary-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- Setup Screen: Mode -->
+        <div class="glass-card fade-in hidden" id="mode-section">
+            <h1 class="gradient-text">MODE</h1>
+            <p>Choose your battlefield</p>
+            <div class="input-group" style="display:flex; flex-direction:column; gap:12px;">
+                <button id="quick-match-btn" class="primary-btn">Quick Match</button>
+                <button id="play-friend-btn" class="glass-btn" style="width:100%;">Play with Friend</button>
+                <button id="back-name-btn" class="glass-btn" style="width:100%; border:none; opacity:0.6; font-size:0.8rem; padding: 8px;">Change Name</button>
+            </div>
+        </div>
+
+        <!-- Setup Screen: Friend -->
+        <div class="glass-card fade-in hidden" id="friend-section">
+            <h1 class="gradient-text">FRIENDS</h1>
+            <div class="input-group" style="display:flex; flex-direction:column; gap:12px;">
+                <button id="create-room-btn" class="primary-btn">Create Room</button>
+                <div style="margin: 5px 0; color: var(--text-muted); font-size: 0.9rem; font-weight: 700;">— OR —</div>
+                <input type="text" id="room-code-input" placeholder="CODE" maxlength="5" style="text-align: center; letter-spacing: 5px; font-weight: 800; text-transform: uppercase;">
+                <button id="join-room-btn" class="glass-btn" style="width:100%;">Join Room</button>
+                <button id="back-mode-btn" class="glass-btn" style="width:100%; border:none; opacity:0.6; font-size:0.8rem; padding: 8px;">Back</button>
+            </div>
+        </div>
+
+        <!-- Setup Screen: Waiting -->
+        <div class="glass-card fade-in hidden" id="waiting-section">
+            <h1 class="gradient-text">WAITING</h1>
+            <p id="waiting-message">Searching for opponent...</p>
+            <h2 id="room-code-display" class="hidden" style="color: var(--gold); font-size: 3.5rem; letter-spacing: 12px; margin: 20px 0; text-shadow: 0 0 15px rgba(212,175,55,0.4);"></h2>
+            <div class="input-group">
+                <button id="cancel-waiting-btn" class="glass-btn" style="width:100%; border:none; opacity:0.8;">Cancel</button>
             </div>
         </div>
     </div>
@@ -28,7 +62,7 @@
     <div id="game-container" class="hidden">
         <div class="game-header">
             <div class="player-slots">
-                <div id="player-me" class="slot">
+                <div id="player-me" class="slot left">
                     <div class="avatar-container">
                         <div class="avatar" id="my-avatar">?</div>
                         <div class="timer-ring" id="my-timer">15</div>
@@ -40,7 +74,7 @@
                     <div class="vs-glow">VS</div>
                 </div>
 
-                <div id="player-opponent" class="slot">
+                <div id="player-opponent" class="slot right">
                     <div class="avatar-container">
                         <div class="avatar" id="opponent-avatar">?</div>
                         <div class="timer-ring" id="opponent-timer">15</div>
@@ -49,7 +83,9 @@
                 </div>
             </div>
             
-            <div id="status-badge" class="status-badge">Connecting...</div>
+            <div id="status-badge-container">
+                <div id="status-badge" class="status-badge">Connecting...</div>
+            </div>
         </div>
 
         <main class="board-area">
@@ -67,7 +103,7 @@
         </main>
 
         <footer class="controls">
-            <button id="reset" class="glass-btn">New Game</button>
+            <button id="reset" class="glass-btn">Leave Match</button>
             <button id="download-btn" class="gold-btn hidden">Download Report</button>
         </footer>
     </div>
